@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Time Capsule</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #1E1E3F 0%, #2D3748 100%);
+            min-height: 100vh;
+            color: #E2E8F0;
+            transition: background 1s ease;
+        }
+        
+        body.retro-mode {
+            font-family: 'VT323', monospace;
+            background: #000;
+            color: #00FF00;
+        }
+        
+        .capsule {
+            background: rgba(30, 30, 63, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .retro-mode .capsule {
+            background: #000;
+            border: 3px solid #00FF00;
+            border-radius: 0;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        .capsule:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+        
+        .retro-mode .capsule:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+        }
+        
+        .memory-card {
+            background: #2D3748;
+            border-radius: 18px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .retro-mode .memory-card {
+            background: #000;
+            border: 2px solid #00FF00;
+            border-radius: 0;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+        }
+        
+        /* Common styles for all memory cards */
+        .memory-card h3, .memory-card .text-gray-300 {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .retro-mode .memory-card h3, 
+        .retro-mode .memory-card .text-gray-300,
+        .retro-mode .memory-card .text-gray-400,
+        .retro-mode .memory-card .text-purple-300 {
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+            color: #00FF00;
+        }
+        
+        /* January - Winter/New Year theme */
+        .memory-card.january-memory {
+            background: linear-gradient(135deg, rgba(224, 247, 250, 0.15) 0%, rgba(79, 195, 247, 0.3) 100%);
+            border: 1px solid rgba(224, 247, 250, 0.3);
+        }
+        .january-date::after {
+            content: "❄️";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* February - Valentine's theme */
+        .memory-card.february-memory {
+            background: linear-gradient(135deg, rgba(136, 14, 79, 0.2) 0%, rgba(194, 24, 91, 0.3) 100%);
+            border: 1px solid rgba(194, 24, 91, 0.3);
+        }
+        .february-date::after {
+            content: "❤️";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* March - St. Patrick's theme */
+        .memory-card.march-memory {
+            background: linear-gradient(135deg, rgba(27, 94, 32, 0.2) 0%, rgba(56, 142, 60, 0.3) 100%);
+            border: 1px solid rgba(56, 142, 60, 0.3);
+        }
+        .march-date::after {
+            content: "☘️";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* April - Spring theme */
+        .memory-card.april-memory {
+            background: linear-gradient(135deg, rgba(100, 181, 246, 0.2) 0%, rgba(41, 121, 255, 0.3) 100%);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+        }
+        .april-date::after {
+            content: "🌷";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* May - Blossom theme */
+        .memory-card.may-memory {
+            background: linear-gradient(135deg, rgba(186, 104, 200, 0.2) 0%, rgba(123, 31, 162, 0.3) 100%);
+            border: 1px solid rgba(186, 104, 200, 0.3);
+        }
+        .may-date::after {
+            content: "🌸";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* June - Pride theme - ENHANCED */
+        .memory-card.june-memory {
+            background: linear-gradient(135deg, 
+                rgba(255, 0, 0, 0.25), 
+                rgba(255, 165, 0, 0.25), 
+                rgba(255, 255, 0, 0.25), 
+                rgba(0, 128, 0, 0.25), 
+                rgba(0, 0, 255, 0.25), 
+                rgba(75, 0, 130, 0.25), 
+                rgba(238, 130, 238, 0.25));
+            background-size: 700% 700%;
+            animation: pride-rainbow 8s ease infinite;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            position: relative;
+        }
+        
+        @keyframes pride-rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .june-date::after {
+            content: "🌈";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* July - Watermelon theme */
+        .memory-card.july-memory {
+            background: linear-gradient(135deg, rgba(211, 47, 47, 0.2) 0%, rgba(76, 175, 80, 0.3) 100%);
+            border: 1px solid rgba(211, 47, 47, 0.3);
+        }
+        .july-date::after {
+            content: "🍉";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* August - Beach theme */
+        .memory-card.august-memory {
+            background: linear-gradient(135deg, rgba(255, 167, 38, 0.2) 0%, rgba(3, 169, 244, 0.3) 100%);
+            border: 1px solid rgba(255, 167, 38, 0.3);
+        }
+        .august-date::after {
+            content: "☀️";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* September - Fall theme - UPDATED */
+        .memory-card.september-memory {
+            background: linear-gradient(135deg, rgba(255, 111, 0, 0.2) 0%, rgba(255, 193, 7, 0.3) 100%);
+            border: 1px solid rgba(255, 111, 0, 0.3);
+        }
+        .september-date::after {
+            content: "🍂";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* October - Halloween theme */
+        .memory-card.october-memory {
+            background: linear-gradient(135deg, rgba(216, 67, 21, 0.2) 0%, rgba(103, 58, 183, 0.3) 100%);
+            border: 1px solid rgba(216, 67, 21, 0.3);
+        }
+        .october-date::after {
+            content: "🎃";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* November - Thanksgiving theme - UPDATED */
+        .memory-card.november-memory {
+            background: linear-gradient(135deg, rgba(121, 85, 72, 0.2) 0%, rgba(62, 39, 35, 0.3) 100%);
+            border: 1px solid rgba(121, 85, 72, 0.3);
+        }
+        .november-date::after {
+            content: "🦃";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* December - Holiday theme */
+        .memory-card.december-memory {
+            background: linear-gradient(135deg, rgba(183, 28, 28, 0.2) 0%, rgba(27, 94, 32, 0.3) 100%);
+            border: 1px solid rgba(183, 28, 28, 0.3);
+        }
+        .december-date::after {
+            content: "🎄";
+            font-size: 1.1em;
+            margin-left: 5px;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        /* Retro mode overrides for month themes */
+        .retro-mode .memory-card.january-memory,
+        .retro-mode .memory-card.february-memory,
+        .retro-mode .memory-card.march-memory,
+        .retro-mode .memory-card.april-memory,
+        .retro-mode .memory-card.may-memory,
+        .retro-mode .memory-card.june-memory,
+        .retro-mode .memory-card.july-memory,
+        .retro-mode .memory-card.august-memory,
+        .retro-mode .memory-card.september-memory,
+        .retro-mode .memory-card.october-memory,
+        .retro-mode .memory-card.november-memory,
+        .retro-mode .memory-card.december-memory {
+            background: #000;
+            border: 2px solid #00FF00;
+            animation: none;
+        }
+        
+        .memory-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .locked {
+            filter: blur(4px);
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        .retro-mode .locked {
+            filter: blur(3px) brightness(0.7);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #9F7AEA 0%, #805AD5 100%);
+            transition: all 0.3s ease;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(159, 122, 234, 0.3);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .retro-mode .btn-primary {
+            background: #000;
+            border: 2px solid #00FF00;
+            border-radius: 0;
+            color: #00FF00;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            padding-top: 0.75rem !important;
+            padding-bottom: 0.75rem !important;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 15px rgba(159, 122, 234, 0.4);
+        }
+        
+        .retro-mode .btn-primary:hover {
+            background: #00FF00;
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #B794F4 0%, #9F7AEA 100%);
+            transition: all 0.3s ease;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(183, 148, 244, 0.3);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .retro-mode .btn-secondary {
+            background: #000;
+            border: 2px solid #00FF00;
+            border-radius: 0;
+            color: #00FF00;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 15px rgba(183, 148, 244, 0.4);
+        }
+        
+        .retro-mode .btn-secondary:hover {
+            background: #00FF00;
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .retro-mode .floating {
+            animation: retro-float 2s steps(4) infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes retro-float {
+            0% { transform: translateY(0px); }
+            25% { transform: translateY(-5px); }
+            50% { transform: translateY(-10px); }
+            75% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .retro-mode .pulse {
+            animation: retro-pulse 1s steps(2) infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes retro-pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        input, textarea {
+            background-color: #1A202C;
+            color: #E2E8F0;
+            border-color: #4A5568;
+            border-radius: 16px;
+            font-family: 'Quicksand', sans-serif;
+        }
+        
+        .retro-mode input, .retro-mode textarea {
+            background-color: #000;
+            color: #00FF00;
+            border: 2px solid #00FF00;
+            border-radius: 0;
+            font-family: 'VT323', monospace;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.4) inset;
+        }
+        
+        input:focus, textarea:focus {
+            border-color: #9F7AEA;
+            box-shadow: 0 0 0 3px rgba(159, 122, 234, 0.2);
+        }
+        
+        .retro-mode input:focus, .retro-mode textarea:focus {
+            border-color: #00FF00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.7) inset;
+            outline: none;
+        }
+        
+        ::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: rgba(159, 122, 234, 0.9);
+            color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: all 0.5s ease;
+            z-index: 1000;
+            font-weight: 600;
+        }
+        
+        .retro-mode .notification {
+            background: #000;
+            border: 2px solid #00FF00;
+            color: #00FF00;
+            border-radius: 0;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            font-family: 'VT323', monospace;
+        }
+        
+        .retro-notification {
+            background: #000;
+            border: 2px solid #00FF00;
+            color: #00FF00;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+            font-family: 'VT323', monospace;
+            font-size: 1.2rem;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        h1, h2, h3 {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .retro-mode h1, .retro-mode h2, .retro-mode h3 {
+            font-family: 'Press Start 2P', cursive;
+            color: #00FF00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+            letter-spacing: 1px;
+        }
+        
+        .retro-mode h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .retro-mode h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .retro-mode h3 {
+            font-size: 1rem;
+        }
+        
+        .emoji-large {
+            font-size: 3rem;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .retro-text {
+            color: #00FF00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+            font-family: 'Press Start 2P', cursive;
+        }
+        
+        .month-date {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        /* Improved text legibility for all cards */
+        .memory-card .text-gray-200,
+        .memory-card .text-gray-300,
+        .memory-card .text-gray-400,
+        .memory-card .text-purple-300 {
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Modal styling improvements */
+        #memory-modal .bg-gray-800 {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .retro-mode #memory-modal .bg-gray-800 {
+            background: #000 !important;
+            border: 2px solid #00FF00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        #memory-modal .text-gray-200,
+        #memory-modal .text-gray-400 {
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .retro-mode #memory-modal .text-gray-200,
+        .retro-mode #memory-modal .text-gray-400,
+        .retro-mode #memory-modal .text-purple-300 {
+            color: #00FF00 !important;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+        }
+        
+        /* Stats section styling */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        @media (max-width: 640px) {
+            .stats-container {
+                grid-template-columns: repeat(1, 1fr);
+            }
+        }
+        
+        .stat-card {
+            background: rgba(45, 55, 72, 0.5);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .retro-mode .stat-card {
+            background: #000;
+            border: 2px solid #00FF00;
+            border-radius: 0;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.4);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .retro-mode .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #B794F4;
+            margin-bottom: 0.25rem;
+        }
+        
+        .retro-mode .stat-value {
+            color: #00FF00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #A0AEC0;
+            font-weight: 500;
+        }
+        
+        .retro-mode .stat-label {
+            color: #00FF00;
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+        }
+        
+        /* Progress bar styling */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(45, 55, 72, 0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.75rem 0;
+        }
+        
+        .retro-mode .progress-container {
+            background: #000;
+            border: 1px solid #00FF00;
+            border-radius: 0;
+            height: 12px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #9F7AEA, #B794F4);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        .retro-mode .progress-bar {
+            background: #00FF00;
+            border-radius: 0;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+        }
+        
+        /* Retro mode cursor */
+        .retro-mode * {
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='12' height='12' x='0' y='0' fill='%2300FF00' /></svg>") 0 0, auto;
+        }
+        
+        /* Retro mode scanlines effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0) 50%,
+                rgba(0, 0, 0, 0.3) 50%
+            );
+            background-size: 100% 4px;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.15;
+            display: none;
+        }
+        
+        .retro-mode .scanlines {
+            display: block;
+        }
+        
+        /* CRT flicker effect */
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            5% { opacity: 0.9; }
+            10% { opacity: 0.97; }
+            15% { opacity: 0.92; }
+            20% { opacity: 0.97; }
+            25% { opacity: 0.9; }
+            30% { opacity: 0.97; }
+            35% { opacity: 0.95; }
+            40% { opacity: 0.97; }
+            45% { opacity: 0.94; }
+            50% { opacity: 0.98; }
+            55% { opacity: 0.95; }
+            60% { opacity: 0.97; }
+            65% { opacity: 0.93; }
+            70% { opacity: 0.97; }
+            75% { opacity: 0.9; }
+            80% { opacity: 0.97; }
+            85% { opacity: 0.93; }
+            90% { opacity: 0.97; }
+            95% { opacity: 0.94; }
+            100% { opacity: 0.97; }
+        }
+        
+        .retro-mode body {
+            animation: flicker 0.3s infinite;
+        }
+        
+        /* Retro mode text selection */
+        .retro-mode ::selection {
+            background: #00FF00;
+            color: #000;
+            text-shadow: none;
+        }
+        
+        /* Exit retro mode button */
+        .exit-retro-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #000;
+            border: 2px solid #00FF00;
+            color: #00FF00;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.7rem;
+            padding: 10px 15px;
+            z-index: 9999;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+            display: none;
+            cursor: pointer;
+        }
+        
+        .retro-mode .exit-retro-btn {
+            display: block;
+        }
+        
+        .exit-retro-btn:hover {
+            background: #00FF00;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.9);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <!-- Scanlines overlay for retro mode -->
+    <div class="scanlines"></div>
+    
+    <!-- Exit retro mode button -->
+    <button class="exit-retro-btn" id="exit-retro-btn">EXIT RETRO MODE</button>
+    
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-purple-300 mb-2" id="main-title">Digital Time Capsule</h1>
+            <p class="text-gray-300">Preserve your thoughts today, rediscover them tomorrow</p>
+        </div>
+        
+        <div class="capsule p-6 md:p-8 mb-8">
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="w-full md:w-1/3 flex justify-center">
+                    <div class="w-48 h-48 relative floating" id="capsule-icon">
+                        <!-- Modified SVG to ensure it's transparent in retro mode -->
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                            <path id="hourglass-path" fill="#B794F4" d="M45.7,-58.9C58.9,-49.3,69.2,-34.7,73.2,-18.5C77.2,-2.3,74.9,15.6,66.7,29.8C58.5,44,44.4,54.5,29.1,62.3C13.8,70.1,-2.7,75.2,-19.2,72.3C-35.7,69.4,-52.2,58.5,-62.9,43.3C-73.6,28.1,-78.5,8.6,-74.9,-8.6C-71.3,-25.8,-59.2,-40.7,-45.1,-50.2C-31,-59.7,-15.5,-63.8,0.4,-64.3C16.3,-64.8,32.6,-68.5,45.7,-58.9Z" transform="translate(100 100)" />
+                        </svg>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-5xl">⏳</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full md:w-2/3">
+                    <h2 class="text-2xl font-semibold text-purple-300 mb-3">Create a New Memory</h2>
+                    <div class="mb-4">
+                        <label for="memory-title" class="block text-sm font-medium text-gray-300 mb-1">Title</label>
+                        <input type="text" id="memory-title" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" placeholder="Name your memory...">
+                    </div>
+                    <div class="mb-4">
+                        <label for="memory-content" class="block text-sm font-medium text-gray-300 mb-1">Your Message</label>
+                        <textarea id="memory-content" rows="3" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" placeholder="Write something you want to remember later..."></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="unlock-date" class="block text-sm font-medium text-gray-300 mb-1">Unlock Date</label>
+                        <input type="date" id="unlock-date" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none">
+                    </div>
+                    <button id="save-memory" class="btn-primary text-white px-6 py-3 rounded-full font-medium">✨ Save to Time Capsule</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="capsule p-6 md:p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-purple-300 mb-6">Your Time Capsule</h2>
+            
+            <div id="empty-state" class="text-center py-10">
+                <div class="emoji-large">🔒</div>
+                <h3 class="text-xl font-medium text-gray-300 mb-2">Your time capsule is empty</h3>
+                <p class="text-gray-400 mb-4">Create your first memory to get started</p>
+            </div>
+            
+            <div id="memories-container" class="grid grid-cols-1 md:grid-cols-2 gap-4" style="display: none;"></div>
+        </div>
+        
+        <!-- Stats Section (with Memory Timeline removed) -->
+        <div class="capsule p-6 md:p-8">
+            <h2 class="text-2xl font-semibold text-purple-300 mb-4">Your Memory Stats</h2>
+            
+            <div id="stats-container" class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div id="total-memories" class="stat-value">0</div>
+                    <div class="stat-label">Total Memories</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">🔓</div>
+                    <div id="unlocked-memories" class="stat-value">0</div>
+                    <div class="stat-label">Unlocked Memories</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">🔒</div>
+                    <div id="locked-memories" class="stat-value">0</div>
+                    <div class="stat-label">Locked Memories</div>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <div class="flex justify-between mb-2">
+                    <span class="text-sm text-gray-400">Unlock Progress</span>
+                    <span id="unlock-percentage" class="text-sm text-purple-300">0%</span>
+                </div>
+                <div class="progress-container">
+                    <div id="unlock-progress" class="progress-bar" style="width: 0%"></div>
+                </div>
+                <p id="next-unlock" class="text-sm text-gray-400 mt-2">No memories waiting to be unlocked</p>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="text-lg font-semibold text-purple-300 mb-3">Monthly Distribution</h3>
+                <div id="monthly-stats" class="text-sm text-gray-300 space-y-2">
+                    <!-- Monthly stats will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for unlocked memories -->
+    <div id="memory-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 rounded-xl p-6 max-w-lg w-full mx-4 border border-purple-500">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-purple-300" id="modal-title"></h3>
+                <button id="close-modal" class="text-gray-400 hover:text-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="mb-4">
+                <p id="modal-date" class="text-sm text-gray-400 mb-2"></p>
+                <p id="modal-content" class="text-gray-200"></p>
+            </div>
+            <div class="flex justify-end">
+                <button id="delete-memory" class="text-red-400 hover:text-red-300 mr-4">Delete</button>
+                <button id="close-memory" class="btn-secondary text-white px-5 py-2 rounded-full font-medium">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        Memory saved to time capsule!
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get today's date in browser's timezone
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const todayStr = formatDateForInput(today);
+            
+            // Set default date to today
+            document.getElementById('unlock-date').value = todayStr;
+            
+            // Load memories from localStorage
+            loadMemories();
+            
+            // Update stats
+            updateStats();
+            
+            // Save memory button
+            document.getElementById('save-memory').addEventListener('click', function() {
+                const title = document.getElementById('memory-title').value.trim();
+                const content = document.getElementById('memory-content').value.trim();
+                const unlockDateStr = document.getElementById('unlock-date').value;
+                
+                if (!title || !content || !unlockDateStr) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                // Create a date object from the input value
+                // This ensures we're working with the date as selected by the user
+                const unlockDate = new Date(unlockDateStr + 'T00:00:00');
+                
+                saveMemory(title, content, unlockDate);
+                
+                // Clear form
+                document.getElementById('memory-title').value = '';
+                document.getElementById('memory-content').value = '';
+                
+                // Show notification
+                showNotification('Memory saved to time capsule! ✨');
+                
+                // Update stats
+                updateStats();
+            });
+            
+            // Close modal buttons
+            document.getElementById('close-modal').addEventListener('click', closeModal);
+            document.getElementById('close-memory').addEventListener('click', closeModal);
+            
+            // Delete memory button
+            document.getElementById('delete-memory').addEventListener('click', function() {
+                const memoryId = this.dataset.memoryId;
+                deleteMemory(memoryId);
+                closeModal();
+                showNotification('Memory deleted 🗑️');
+                
+                // Update stats
+                updateStats();
+            });
+            
+            // Easter Egg: Retro Mode
+            const textInputs = document.querySelectorAll('input[type="text"], textarea');
+            textInputs.forEach(input => {
+                input.addEventListener('input', function(e) {
+                    if (e.target.value.toLowerCase().includes('retro')) {
+                        activateRetroMode();
+                    }
+                });
+            });
+            
+            // Exit retro mode button
+            document.getElementById('exit-retro-btn').addEventListener('click', function() {
+                deactivateRetroMode();
+            });
+            
+            // Handle retro mode for hourglass SVG
+            document.body.addEventListener('classChange', updateHourglassSVG);
+            
+            // Initial check for retro mode
+            updateHourglassSVG();
+        });
+        
+        // Helper function to format a date as YYYY-MM-DD for input fields
+        function formatDateForInput(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        function updateHourglassSVG() {
+            const hourglassPath = document.getElementById('hourglass-path');
+            if (document.body.classList.contains('retro-mode')) {
+                hourglassPath.setAttribute('fill', 'transparent');
+                hourglassPath.setAttribute('stroke', '#00FF00');
+                hourglassPath.setAttribute('stroke-width', '3');
+            } else {
+                hourglassPath.setAttribute('fill', '#B794F4');
+                hourglassPath.removeAttribute('stroke');
+                hourglassPath.removeAttribute('stroke-width');
+            }
+        }
+        
+        function activateRetroMode() {
+            // Add retro class to body
+            document.body.classList.add('retro-mode');
+            
+            // Change main title to retro text
+            document.getElementById('main-title').classList.add('retro-text');
+            
+            // Update hourglass SVG
+            updateHourglassSVG();
+            
+            // Show retro notification
+            const notification = document.getElementById('notification');
+            notification.textContent = 'RETRO MODE ACTIVATED';
+            notification.classList.add('retro-notification');
+            notification.classList.add('show');
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                
+                // Reset notification text after animation completes
+                setTimeout(() => {
+                    notification.textContent = 'Memory saved to time capsule!';
+                    notification.classList.remove('retro-notification');
+                }, 500);
+            }, 3000);
+        }
+        
+        function deactivateRetroMode() {
+            // Remove retro class from body
+            document.body.classList.remove('retro-mode');
+            
+            // Remove retro text class from main title
+            document.getElementById('main-title').classList.remove('retro-text');
+            
+            // Update hourglass SVG
+            updateHourglassSVG();
+            
+            // Show notification
+            const notification = document.getElementById('notification');
+            notification.textContent = 'Retro mode deactivated';
+            notification.classList.add('show');
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        function saveMemory(title, content, unlockDate) {
+            // Get existing memories or initialize empty array
+            const memories = JSON.parse(localStorage.getItem('timeCapsulesMemories')) || [];
+            
+            // Create new memory object
+            const memory = {
+                id: Date.now().toString(),
+                title: title,
+                content: content,
+                createdAt: new Date().toISOString(),
+                unlockDate: unlockDate.toISOString().split('T')[0] // Store as YYYY-MM-DD
+            };
+            
+            // Add to memories array
+            memories.push(memory);
+            
+            // Save to localStorage
+            localStorage.setItem('timeCapsulesMemories', JSON.stringify(memories));
+            
+            // Refresh memories display
+            loadMemories();
+        }
+        
+        function loadMemories() {
+            const memories = JSON.parse(localStorage.getItem('timeCapsulesMemories')) || [];
+            const memoriesContainer = document.getElementById('memories-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            // Clear container
+            memoriesContainer.innerHTML = '';
+            
+            if (memories.length === 0) {
+                emptyState.style.display = 'block';
+                memoriesContainer.style.display = 'none';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            memoriesContainer.style.display = 'grid';
+            
+            // Sort memories by unlock date
+            memories.sort((a, b) => new Date(a.unlockDate) - new Date(b.unlockDate));
+            
+            // Get current date for comparison
+            const currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+            
+            // Display each memory
+            memories.forEach(memory => {
+                // Create a date object from the stored date string
+                // This ensures we're working with the date as it was stored
+                const unlockDate = new Date(memory.unlockDate + 'T00:00:00');
+                
+                const isUnlocked = unlockDate <= currentDate;
+                
+                // Get month name for styling
+                const monthNames = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+                const monthName = monthNames[unlockDate.getMonth()];
+                
+                // Format dates for display
+                const formattedUnlockDate = unlockDate.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                
+                const memoryCard = document.createElement('div');
+                memoryCard.className = `memory-card ${monthName}-memory p-5 relative`;
+                
+                // Add locked class if not yet unlocked
+                if (!isUnlocked) {
+                    memoryCard.innerHTML = `
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-lg font-semibold text-purple-300">${memory.title}</h3>
+                            <span class="text-xs text-gray-400 month-date ${monthName}-date">${formattedUnlockDate}</span>
+                        </div>
+                        <div class="locked">
+                            <p class="text-gray-300">${memory.content}</p>
+                        </div>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-xs text-gray-400">Unlock on ${formattedUnlockDate}</span>
+                            <div class="flex items-center">
+                                <span class="text-lg mr-1">🔒</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    memoryCard.innerHTML = `
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-lg font-semibold text-purple-300">${memory.title}</h3>
+                            <span class="text-xs text-gray-400 month-date ${monthName}-date">${formattedUnlockDate}</span>
+                        </div>
+                        <p class="text-gray-300 line-clamp-3">${memory.content.length > 100 ? memory.content.substring(0, 100) + '...' : memory.content}</p>
+                        <div class="mt-4 flex justify-between items-center">
+                            <span class="text-xs text-gray-400">Unlocked</span>
+                            <button class="view-memory text-purple-300 hover:text-purple-200 flex items-center" data-memory-id="${memory.id}">
+                                <span>View</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Add click event to view memory
+                    setTimeout(() => {
+                        const viewButton = memoryCard.querySelector('.view-memory');
+                        if (viewButton) {
+                            viewButton.addEventListener('click', function() {
+                                openMemory(memory.id);
+                            });
+                        }
+                    }, 0);
+                }
+                
+                memoriesContainer.appendChild(memoryCard);
+            });
+        }
+        
+        function openMemory(memoryId) {
+            const memories = JSON.parse(localStorage.getItem('timeCapsulesMemories')) || [];
+            const memory = memories.find(m => m.id === memoryId);
+            
+            if (!memory) return;
+            
+            // Create a date object from the stored date string
+            const unlockDate = new Date(memory.unlockDate + 'T00:00:00');
+            
+            // Format date for display
+            const formattedUnlockDate = unlockDate.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            // Set modal content
+            document.getElementById('modal-title').textContent = memory.title;
+            document.getElementById('modal-date').textContent = `Unlocked on ${formattedUnlockDate}`;
+            document.getElementById('modal-content').textContent = memory.content;
+            document.getElementById('delete-memory').dataset.memoryId = memory.id;
+            
+            // Show modal
+            document.getElementById('memory-modal').classList.remove('hidden');
+        }
+        
+        function closeModal() {
+            document.getElementById('memory-modal').classList.add('hidden');
+        }
+        
+        function deleteMemory(memoryId) {
+            let memories = JSON.parse(localStorage.getItem('timeCapsulesMemories')) || [];
+            memories = memories.filter(memory => memory.id !== memoryId);
+            localStorage.setItem('timeCapsulesMemories', JSON.stringify(memories));
+            loadMemories();
+        }
+        
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        function updateStats() {
+            const memories = JSON.parse(localStorage.getItem('timeCapsulesMemories')) || [];
+            
+            // Get current date for comparison
+            const currentDate = new Date();
+            currentDate.setHours(0, 0, 0, 0);
+            
+            // Basic stats
+            const totalMemories = memories.length;
+            const unlockedMemories = memories.filter(memory => {
+                const unlockDate = new Date(memory.unlockDate + 'T00:00:00');
+                return unlockDate <= currentDate;
+            }).length;
+            const lockedMemories = totalMemories - unlockedMemories;
+            
+            // Update stats display
+            document.getElementById('total-memories').textContent = totalMemories;
+            document.getElementById('unlocked-memories').textContent = unlockedMemories;
+            document.getElementById('locked-memories').textContent = lockedMemories;
+            
+            // Calculate unlock percentage
+            const unlockPercentage = totalMemories > 0 ? Math.round((unlockedMemories / totalMemories) * 100) : 0;
+            document.getElementById('unlock-percentage').textContent = `${unlockPercentage}%`;
+            document.getElementById('unlock-progress').style.width = `${unlockPercentage}%`;
+            
+            // Find next memory to unlock
+            const lockedMemoriesList = memories.filter(memory => {
+                const unlockDate = new Date(memory.unlockDate + 'T00:00:00');
+                return unlockDate > currentDate;
+            }).sort((a, b) => new Date(a.unlockDate) - new Date(b.unlockDate));
+            
+            if (lockedMemoriesList.length > 0) {
+                const nextUnlock = new Date(lockedMemoriesList[0].unlockDate + 'T00:00:00');
+                
+                const formattedNextUnlock = nextUnlock.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric'
+                });
+                document.getElementById('next-unlock').textContent = `Next memory unlocks on ${formattedNextUnlock}`;
+            } else {
+                document.getElementById('next-unlock').textContent = 'No memories waiting to be unlocked';
+            }
+            
+            // Monthly distribution
+            const monthlyDistribution = {};
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            memories.forEach(memory => {
+                const unlockDate = new Date(memory.unlockDate + 'T00:00:00');
+                const month = unlockDate.getMonth();
+                monthlyDistribution[month] = (monthlyDistribution[month] || 0) + 1;
+            });
+            
+            // Update monthly stats
+            const monthlyStatsContainer = document.getElementById('monthly-stats');
+            monthlyStatsContainer.innerHTML = '';
+            
+            if (Object.keys(monthlyDistribution).length === 0) {
+                monthlyStatsContainer.innerHTML = '<p>No memories yet</p>';
+            } else {
+                for (let i = 0; i < 12; i++) {
+                    if (monthlyDistribution[i]) {
+                        const monthItem = document.createElement('div');
+                        monthItem.className = 'flex justify-between';
+                        monthItem.innerHTML = `
+                            <span>${monthNames[i]}</span>
+                            <span>${monthlyDistribution[i]} ${monthlyDistribution[i] === 1 ? 'memory' : 'memories'}</span>
+                        `;
+                        monthlyStatsContainer.appendChild(monthItem);
+                    }
+                }
+            }
+        }
+        
+        // Create a MutationObserver to watch for class changes on body
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === 'class') {
+                    // Dispatch a custom event when body class changes
+                    document.body.dispatchEvent(new Event('classChange'));
+                }
+            });
+        });
+        
+        // Start observing the body for class changes
+        observer.observe(document.body, { attributes: true });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92f4df1bf6b2d96a',t:'MTc0NDQ4MzQyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
